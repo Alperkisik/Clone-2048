@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Level_UI_Manager : MonoBehaviour
 {
@@ -40,6 +39,6 @@ public class Level_UI_Manager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-
+        SceneManager.LoadScene("Main Menu Scene");
     }
 }

@@ -4,20 +4,20 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class SaveSystem : MonoBehaviour
 {
-    public static void SaveGame(GameData gameData)
+    public static void SaveLevel(Level level)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/LevelData.save";
 
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        GameDatas data = new GameDatas(gameData);
+        LevelData data = new LevelData(level);
 
         formatter.Serialize(stream, data);
         stream.Close();
     }
 
-    public static GameDatas LoadGameDatas()
+    public static LevelData LoadLevel()
     {
         string path = Application.persistentDataPath + "/LevelData.save";
         if (File.Exists(path))
@@ -25,7 +25,8 @@ public class SaveSystem : MonoBehaviour
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
 
-            GameDatas data = formatter.Deserialize(stream) as GameDatas;
+            LevelData data = formatter.Deserialize(stream) as LevelData;
+            stream.Close();
 
             return data;
         }

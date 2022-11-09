@@ -31,6 +31,7 @@ public class Game_Manager : MonoBehaviour
 
     private void Start()
     {
+        high_Score = PlayerPrefs.GetInt("Highscore");
         InstantiateLevel(levelIndex);
     }
 
@@ -90,6 +91,7 @@ public class Game_Manager : MonoBehaviour
     public void Set_HighScore(int score)
     {
         high_Score = score;
-        //save high score
+        PlayerPrefs.SetInt("Highscore", high_Score);
+        PlayerPrefs.Save();
     }
 }

@@ -20,17 +20,18 @@ public class Level_Manager : MonoBehaviour
 
     void Start()
     {
+        playerScore = 0;
         Event_Listener();
-    }
-
-    void Update()
-    {
-
     }
 
     private void Event_Listener()
     {
+        OnLevelEnded += Level_Manager_Event_OnLevelEnded;
+    }
 
+    private void Level_Manager_Event_OnLevelEnded(object sender, EventArgs e)
+    {
+        LevelSuccess();
     }
 
     private void LevelSuccess()

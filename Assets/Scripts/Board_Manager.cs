@@ -13,9 +13,10 @@ public class Board_Manager : MonoBehaviour
     [SerializeField] int startWithXBlock = 1;
 
     public event System.EventHandler OnBoardGenerationDone;
-
+    bool loadPreviousBoard = false;
     int[,] board_Values;
     GameObject[,] blocks;
+    Level level;
 
     private void Awake()
     {
@@ -26,8 +27,45 @@ public class Board_Manager : MonoBehaviour
     {
         blocks = new GameObject[boardWidth, boardWidth];
         board_Values = new int[boardWidth, boardWidth];
-        Generate_Board();
+
         Event_Listener();
+        Generate_Board();
+        //CheckLoadGameExist();
+
+        //if (loadPreviousBoard) LoadGame(); else Generate_Board();
+    }
+
+    void CheckLoadGameExist()
+    {
+        GameObject data = GameObject.Find("Level Datas");
+        level = data.GetComponent<Level>();
+        if (level.levelLoaded) loadPreviousBoard = true; else loadPreviousBoard = false;
+    }
+
+    void LoadGame()
+    {
+        float xPos = -1.8f, yPos = 1.8f, space = 0.2f;
+        boardWidth = level.boardWidth;
+        board_Values = level.board_values;
+        Increase_Score(level.score);
+
+        for (int y = 0; y < boardWidth; y++)
+        {
+            xPos = -1.8f;
+            for (int x = 0; x < boardWidth; x++)
+            {
+                GameObject block = Instantiate(blockPrefab, new Vector2(xPos, yPos), Quaternion.identity, blockParentTransform);
+                block.name = "Block [" + (x + 1) + "," + (y + 1) + "]";
+                block.GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, y]);
+                block.GetComponent<Block_Manager>().SetXYpositions(x, y);
+                blocks[x, y] = block;
+
+                xPos += 1f + space;
+            }
+            yPos += -1f - space;
+        }
+
+        OnBoardGenerationDone?.Invoke(this, System.EventArgs.Empty);
     }
 
     void Generate_Board()
@@ -67,6 +105,7 @@ public class Board_Manager : MonoBehaviour
             }
         }
 
+        SaveGame();
         OnBoardGenerationDone?.Invoke(this, System.EventArgs.Empty);
     }
 
@@ -83,6 +122,7 @@ public class Board_Manager : MonoBehaviour
         //Debug.Log("Input Manager left input event triggered");
         MoveBlocks_Left();
         Change_RandomBlock();
+        SaveGame();
     }
 
     private void InputManager_Event_OnRightInputReceived(object sender, System.EventArgs e)
@@ -90,6 +130,7 @@ public class Board_Manager : MonoBehaviour
         //Debug.Log("Input Manager right input event triggered");
         MoveBlocks_Right();
         Change_RandomBlock();
+        SaveGame();
     }
 
     private void InputManager_Event_OnUpInputReceived(object sender, System.EventArgs e)
@@ -97,6 +138,7 @@ public class Board_Manager : MonoBehaviour
         //Debug.Log("Input Manager up input event triggered");
         MoveBlocks_UP();
         Change_RandomBlock();
+        SaveGame();
     }
 
     private void InputManager_Event_OnDownInputReceived(object sender, System.EventArgs e)
@@ -104,6 +146,7 @@ public class Board_Manager : MonoBehaviour
         //Debug.Log("Input Manager down input event triggered");
         MoveBlocks_Down();
         Change_RandomBlock();
+        SaveGame();
     }
 
     private void MoveBlocks_UP()
@@ -326,5 +369,13 @@ public class Board_Manager : MonoBehaviour
             board_Values[xPos, yPos] = 2;
             blocks[xPos, yPos].GetComponent<Block_Manager>().Set_Block_Value(2);
         }
+    }
+
+    private void SaveGame()
+    {
+        /*level.score = Level_Manager.instance.GetPlayerScore();
+        level.boardWidth = boardWidth;
+        level.board_values = board_Values;
+        level.SaveLevel();*/
     }
 }
