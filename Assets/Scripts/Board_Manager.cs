@@ -165,7 +165,7 @@ public class Board_Manager : MonoBehaviour
     private void MoveBlocks_UP()
     {
         //Debug.Log("Move Blocks UP");
-
+        int yPos;
         for (int x = 0; x < boardWidth; x++)
         {
             for (int y = 1; y < boardWidth; y++)
@@ -173,6 +173,45 @@ public class Board_Manager : MonoBehaviour
                 if (board_Values[x, y] == 0) continue;
                 //Debug.Log("Column : " + (x + 1) + ",Row :" + (y + 1));
 
+                // 0 0 0 0
+                // 0 2 2 0
+                // 0 2 2 0
+                // 0 0 0 0
+
+                bool condition;
+                yPos = y;
+
+                do
+                {
+                    if (yPos - 1 < 0) break;
+
+                    if (board_Values[x, yPos - 1] == 0) //switch
+                    {
+                        board_Values[x, yPos - 1] = board_Values[x, yPos];
+                        blocks[x, yPos - 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, yPos - 1]);
+
+                        board_Values[x, yPos] = 0;
+                        blocks[x, yPos].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        yPos--;
+                        condition = true;
+                    }
+                    else if (board_Values[x, yPos - 1] == board_Values[x, yPos]) //merge
+                    {
+                        board_Values[x, yPos - 1] += board_Values[x, yPos - 1];
+                        blocks[x, yPos - 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, yPos - 1]);
+
+                        Increase_Score(board_Values[x, yPos - 1]);
+
+                        board_Values[x, yPos] = 0;
+                        blocks[x, yPos].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        break;
+                    }
+                    else break;
+                } while (condition);
+
+                /*
                 //merge
                 for (int i = 1; i < boardWidth - 1; i++)
                 {
@@ -206,6 +245,7 @@ public class Board_Manager : MonoBehaviour
                         break;
                     }
                 }
+                */
             }
         }
     }
@@ -213,14 +253,48 @@ public class Board_Manager : MonoBehaviour
     private void MoveBlocks_Down()
     {
         //Debug.Log("Move Blocks Down");
-
+        int yPos;
         for (int x = 0; x < boardWidth; x++)
         {
             for (int y = boardWidth - 2; y >= 0; y--)
             {
                 if (board_Values[x, y] == 0) continue;
-                //Debug.Log("Column : " + (x + 1) + ",Row :" + (y + 1));
 
+                bool condition;
+                yPos = y;
+
+                do
+                {
+                    if (yPos + 1 >= boardWidth) break;
+
+                    if (board_Values[x, yPos + 1] == 0) //switch
+                    {
+                        board_Values[x, yPos + 1] = board_Values[x, yPos];
+                        blocks[x, yPos + 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, yPos + 1]);
+
+                        board_Values[x, yPos] = 0;
+                        blocks[x, yPos].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        yPos++;
+                        condition = true;
+                    }
+                    else if (board_Values[x, yPos + 1] == board_Values[x, yPos]) //merge
+                    {
+                        board_Values[x, yPos + 1] += board_Values[x, yPos + 1];
+                        blocks[x, yPos + 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, yPos + 1]);
+
+                        Increase_Score(board_Values[x, yPos + 1]);
+
+                        board_Values[x, yPos] = 0;
+                        blocks[x, yPos].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        break;
+                    }
+                    else break;
+                } while (condition);
+
+                //Debug.Log("Column : " + (x + 1) + ",Row :" + (y + 1));
+                /*
                 //merge
                 for (int i = boardWidth - 1; i >= 1; i--)
                 {
@@ -254,18 +328,54 @@ public class Board_Manager : MonoBehaviour
                         break;
                     }
                 }
+                */
             }
         }
     }
 
     private void MoveBlocks_Right()
     {
+        int xPos;
         for (int y = 0; y < boardWidth; y++)
         {
             for (int x = boardWidth - 2; x >= 0; x--)
             {
                 if (board_Values[x, y] == 0) continue;
 
+                bool condition;
+                xPos = x;
+
+                do
+                {
+                    if (xPos + 1 >= boardWidth) break;
+
+                    if (board_Values[xPos + 1, y] == 0) //switch
+                    {
+                        board_Values[xPos + 1, y] = board_Values[xPos, y];
+                        blocks[xPos + 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[xPos + 1, y]);
+
+                        board_Values[xPos, y] = 0;
+                        blocks[xPos, y].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        xPos++;
+                        condition = true;
+                    }
+                    else if (board_Values[xPos + 1, y] == board_Values[xPos, y]) //merge
+                    {
+                        board_Values[xPos + 1, y] += board_Values[xPos + 1, y];
+                        blocks[xPos + 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[xPos + 1, y]);
+
+                        Increase_Score(board_Values[xPos + 1, y]);
+
+                        board_Values[xPos, y] = 0;
+                        blocks[xPos, y].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        break;
+                    }
+                    else break;
+                } while (condition);
+
+                /*
                 //merge
                 for (int i = boardWidth - 1; i >= 1; i--)
                 {
@@ -298,7 +408,7 @@ public class Board_Manager : MonoBehaviour
 
                         break;
                     }
-                }
+                }*/
             }
         }
     }
@@ -306,13 +416,47 @@ public class Board_Manager : MonoBehaviour
     private void MoveBlocks_Left()
     {
         //Debug.Log("Move Blocks Right");
-
+        int xPos;
         for (int y = 0; y < boardWidth; y++)
         {
             for (int x = 1; x < boardWidth; x++)
             {
                 if (board_Values[x, y] == 0) continue;
 
+                bool condition;
+                xPos = x;
+
+                do
+                {
+                    if (xPos - 1 < 0) break;
+
+                    if (board_Values[xPos - 1, y] == 0) //switch
+                    {
+                        board_Values[xPos - 1, y] = board_Values[xPos, y];
+                        blocks[xPos - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[xPos - 1, y]);
+
+                        board_Values[xPos, y] = 0;
+                        blocks[xPos, y].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        xPos--;
+                        condition = true;
+                    }
+                    else if (board_Values[xPos - 1, y] == board_Values[xPos, y]) //merge
+                    {
+                        board_Values[xPos - 1, y] += board_Values[xPos - 1, y];
+                        blocks[xPos - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[xPos - 1, y]);
+
+                        Increase_Score(board_Values[xPos - 1, y]);
+
+                        board_Values[xPos, y] = 0;
+                        blocks[xPos, y].GetComponent<Block_Manager>().Set_Block_Value(0);
+
+                        break;
+                    }
+                    else break;
+                } while (condition);
+
+                /*
                 //merge
                 for (int i = 1; i < boardWidth - 1; i++)
                 {
@@ -345,7 +489,7 @@ public class Board_Manager : MonoBehaviour
 
                         break;
                     }
-                }
+                }*/
             }
         }
     }
@@ -388,7 +532,7 @@ public class Board_Manager : MonoBehaviour
     {
         saveLoadSystem.score = Level_Manager.instance.GetPlayerScore();
         saveLoadSystem.board_width = boardWidth;
-        
+
         string boardValues_text = "";
         for (int x = 0; x < boardWidth; x++)
         {

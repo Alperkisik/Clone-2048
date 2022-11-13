@@ -27,7 +27,7 @@ public class SaveLoadSystem : MonoBehaviour
 
         PlayerPrefs.Save();
 
-        Debug.Log("Level Saved.");
+        //Debug.Log("Level Saved.");
     }
 
     public void LoadLevel()
