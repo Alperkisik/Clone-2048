@@ -11,6 +11,10 @@ public class Level_UI_Manager : MonoBehaviour
 
     void Start()
     {
+        if (GameMode.instance.new_game) score = 0; else score = PlayerPrefs.GetInt("Score");
+
+        textMesh_ScoreText.text = score.ToString();
+
         GetHighScore();
         Event_Listener();
     }

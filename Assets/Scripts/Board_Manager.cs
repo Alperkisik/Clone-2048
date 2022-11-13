@@ -15,7 +15,7 @@ public class Board_Manager : MonoBehaviour
     public event System.EventHandler OnBoardGenerationDone;
     int[,] board_Values;
     GameObject[,] blocks;
-    Level level;
+    SaveLoadSystem saveLoadSystem;
 
     private void Awake()
     {
@@ -32,8 +32,9 @@ public class Board_Manager : MonoBehaviour
     {
         blocks = new GameObject[boardWidth, boardWidth];
         board_Values = new int[boardWidth, boardWidth];
-        GameObject data = GameObject.Find("Level Datas");
-        level = data.GetComponent<Level>();
+        GameObject data = GameObject.Find("Datas");
+        saveLoadSystem = data.GetComponent<SaveLoadSystem>();
+
         if (GameMode.instance.new_game) Generate_Board(); else LoadGame();
     }
 
@@ -41,21 +42,20 @@ public class Board_Manager : MonoBehaviour
     {
         //Debug.Log("board manager load game");
         float xPos = -1.8f, yPos = 1.8f, space = 0.2f;
-        boardWidth = level.boardWidth;
+        boardWidth = saveLoadSystem.board_width;
         //Debug.Log("board manager boardWidth : " + boardWidth);
         //Debug.Log("board manager boardWidth : " + level.boardValues_text);
 
         int index = 0;
+        string boardText = saveLoadSystem.board_values_text;
         for (int x = 0; x < boardWidth; x++)
         {
             for (int y = 0; y < boardWidth; y++)
             {
-                board_Values[x, y] = level.boardValues_text[index];
+                board_Values[x, y] = ConvertCharToBoardValue(boardText[index]);
                 index++;
             }
         }
-
-        Increase_Score(level.score);
 
         for (int y = 0; y < boardWidth; y++)
         {
@@ -73,11 +73,15 @@ public class Board_Manager : MonoBehaviour
             yPos += -1f - space;
         }
 
+        Increase_Score(saveLoadSystem.score);
+
         OnBoardGenerationDone?.Invoke(this, System.EventArgs.Empty);
     }
 
     void Generate_Board()
     {
+        saveLoadSystem.ResetData();
+
         float xPos = -1.8f, yPos = 1.8f, space = 0.2f;
 
         for (int y = 0; y < boardWidth; y++)
@@ -270,7 +274,7 @@ public class Board_Manager : MonoBehaviour
                         board_Values[i - 1, y] += board_Values[i - 1, y];
                         blocks[i - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[i - 1, y]);
 
-                        Increase_Score(board_Values[x, i - 1]);
+                        Increase_Score(board_Values[i - 1, y]);
 
                         board_Values[i, y] = 0;
                         blocks[i, y].GetComponent<Block_Manager>().Set_Block_Value(0);
@@ -317,7 +321,7 @@ public class Board_Manager : MonoBehaviour
                         board_Values[i - 1, y] += board_Values[i - 1, y];
                         blocks[i - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[i - 1, y]);
 
-                        Increase_Score(board_Values[x, i - 1]);
+                        Increase_Score(board_Values[i - 1, y]);
 
                         board_Values[i, y] = 0;
                         blocks[i, y].GetComponent<Block_Manager>().Set_Block_Value(0);
@@ -382,20 +386,55 @@ public class Board_Manager : MonoBehaviour
 
     private void SaveGame()
     {
-        level.score = Level_Manager.instance.GetPlayerScore();
-        //Debug.Log("boardWidth : " + boardWidth);
-        level.boardWidth = boardWidth;
-        //Debug.Log("level.boardWidth : " + level.boardWidth);
+        saveLoadSystem.score = Level_Manager.instance.GetPlayerScore();
+        saveLoadSystem.board_width = boardWidth;
+        
         string boardValues_text = "";
         for (int x = 0; x < boardWidth; x++)
         {
             for (int y = 0; y < boardWidth; y++)
             {
-                boardValues_text += board_Values[x, y].ToString();
+                boardValues_text += ConvertBoardValueToChar(board_Values[x, y]);
             }
         }
 
-        level.boardValues_text = boardValues_text;
-        level.SaveLevel();
+        saveLoadSystem.board_values_text = boardValues_text;
+        saveLoadSystem.SaveLevel();
+    }
+
+    private int ConvertCharToBoardValue(char value)
+    {
+        //a 0 b 2 c 4 d 8 e 16 f 32 g 64 h 128 i 256 j 512 k 1024 
+
+        if (value == 'b') return 2;
+        else if (value == 'c') return 4;
+        else if (value == 'd') return 8;
+        else if (value == 'e') return 16;
+        else if (value == 'f') return 32;
+        else if (value == 'g') return 64;
+        else if (value == 'h') return 128;
+        else if (value == 'i') return 256;
+        else if (value == 'j') return 512;
+        else if (value == 'k') return 1024;
+        else if (value == 'a') return 0;
+        else return 0;
+    }
+
+    private string ConvertBoardValueToChar(int value)
+    {
+        //a 0 b 2 c 4 d 8 e 16 f 32 g 64 h 128 i 256 j 512 k 1024 
+
+        if (value == 2) return "b";
+        else if (value == 4) return "c";
+        else if (value == 8) return "d";
+        else if (value == 16) return "e";
+        else if (value == 32) return "f";
+        else if (value == 64) return "g";
+        else if (value == 128) return "h";
+        else if (value == 256) return "i";
+        else if (value == 512) return "j";
+        else if (value == 1024) return "k";
+        else if (value == 0) return "a";
+        else return "";
     }
 }

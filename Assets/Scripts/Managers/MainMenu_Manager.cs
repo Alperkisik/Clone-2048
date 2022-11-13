@@ -7,16 +7,14 @@ using UnityEngine.SceneManagement;
 public class MainMenu_Manager : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI textMesh_HighScore;
-    [SerializeField] Level level;
     [SerializeField] GameObject continueButton;
     int highScore = 0;
 
     private void Start()
     {
         SetHighScore();
-        level.LoadLevel();
 
-        if (level.score == 0) continueButton.SetActive(false); else continueButton.SetActive(true);
+        if (PlayerPrefs.GetInt("Score") > 0) continueButton.SetActive(true); else continueButton.SetActive(false);
     }
 
     private void SetHighScore()
