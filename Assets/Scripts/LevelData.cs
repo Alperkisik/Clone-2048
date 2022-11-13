@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-[System.Serializable]
-public class LevelData : MonoBehaviour
+[Serializable]
+public class LevelData
 {
     public int score;
-    public int[,] board_values;
+    public string boardValues_text;
     public int boardWidth;
 
     public LevelData(Level level)
     {
         score = level.score;
-        board_values = level.board_values;
+        boardValues_text = level.boardValues_text;
         boardWidth = level.boardWidth;
     }
 }

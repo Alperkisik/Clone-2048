@@ -8,6 +8,7 @@ public class SaveSystem : MonoBehaviour
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/LevelData.save";
+        //Debug.Log(path);
 
         FileStream stream = new FileStream(path, FileMode.Create);
 

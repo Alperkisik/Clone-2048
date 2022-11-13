@@ -14,6 +14,7 @@ public class MainMenu_Manager : MonoBehaviour
     private void Start()
     {
         SetHighScore();
+        level.LoadLevel();
 
         if (level.score == 0) continueButton.SetActive(false); else continueButton.SetActive(true);
     }
@@ -26,13 +27,13 @@ public class MainMenu_Manager : MonoBehaviour
 
     public void Continue()
     {
-        //level.LoadLevel();
+        GameMode.instance.new_game = false;
         SceneManager.LoadScene("Game Scene");
     }
 
     public void NewGame()
     {
-        level.levelLoaded = false;
+        GameMode.instance.new_game = true;
         SceneManager.LoadScene("Game Scene");
     }
 

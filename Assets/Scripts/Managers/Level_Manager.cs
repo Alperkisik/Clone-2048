@@ -10,18 +10,20 @@ public class Level_Manager : MonoBehaviour
     public event EventHandler OnLevelEnded;
     public event EventHandler OnPlayerGetScore;
     public event EventHandler OnPlayerGetHighScore;
-
+    public event EventHandler OnLevelLoaded;
     int playerScore = 0;
 
     private void Awake()
     {
         instance = this;
+
+        playerScore = 0;
+        Event_Listener();
     }
 
     void Start()
     {
-        playerScore = 0;
-        Event_Listener();
+        OnLevelLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     private void Event_Listener()

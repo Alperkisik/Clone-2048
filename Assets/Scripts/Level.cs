@@ -5,31 +5,37 @@ using UnityEngine;
 public class Level : MonoBehaviour
 {
     public int score;
-    public int[,] board_values;
     public int boardWidth;
     public bool levelLoaded = false;
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(transform.gameObject);
-    }
+    public string boardValues_text;
 
     private void Start()
     {
         levelLoaded = false;
+
+        LoadLevel();
     }
 
     public void SaveLevel()
     {
+        //Debug.Log(boardValues_text);
         SaveSystem.SaveLevel(this);
     }
 
     public void LoadLevel()
     {
         LevelData data = SaveSystem.LoadLevel();
-        levelLoaded = true;
-        score = data.score;
-        board_values = data.board_values;
-        boardWidth = data.boardWidth;
+        if(data != null)
+        {
+            if (score > 0) 
+            {
+                levelLoaded = true;
+                score = data.score;
+                boardWidth = data.boardWidth;
+                boardValues_text = data.boardValues_text;
+            } 
+            else levelLoaded = false;
+        }
+        else levelLoaded = false;
     }
 }

@@ -13,7 +13,6 @@ public class Board_Manager : MonoBehaviour
     [SerializeField] int startWithXBlock = 1;
 
     public event System.EventHandler OnBoardGenerationDone;
-    bool loadPreviousBoard = false;
     int[,] board_Values;
     GameObject[,] blocks;
     Level level;
@@ -25,28 +24,37 @@ public class Board_Manager : MonoBehaviour
 
     void Start()
     {
-        blocks = new GameObject[boardWidth, boardWidth];
-        board_Values = new int[boardWidth, boardWidth];
-
         Event_Listener();
-        Generate_Board();
-        //CheckLoadGameExist();
-
-        //if (loadPreviousBoard) LoadGame(); else Generate_Board();
+        Start_Board();
     }
 
-    void CheckLoadGameExist()
+    void Start_Board()
     {
+        blocks = new GameObject[boardWidth, boardWidth];
+        board_Values = new int[boardWidth, boardWidth];
         GameObject data = GameObject.Find("Level Datas");
         level = data.GetComponent<Level>();
-        if (level.levelLoaded) loadPreviousBoard = true; else loadPreviousBoard = false;
+        if (GameMode.instance.new_game) Generate_Board(); else LoadGame();
     }
 
     void LoadGame()
     {
+        //Debug.Log("board manager load game");
         float xPos = -1.8f, yPos = 1.8f, space = 0.2f;
         boardWidth = level.boardWidth;
-        board_Values = level.board_values;
+        //Debug.Log("board manager boardWidth : " + boardWidth);
+        //Debug.Log("board manager boardWidth : " + level.boardValues_text);
+
+        int index = 0;
+        for (int x = 0; x < boardWidth; x++)
+        {
+            for (int y = 0; y < boardWidth; y++)
+            {
+                board_Values[x, y] = level.boardValues_text[index];
+                index++;
+            }
+        }
+
         Increase_Score(level.score);
 
         for (int y = 0; y < boardWidth; y++)
@@ -111,6 +119,7 @@ public class Board_Manager : MonoBehaviour
 
     void Event_Listener()
     {
+
         Input_Manager.instance.OnDownInputReceived += InputManager_Event_OnDownInputReceived;
         Input_Manager.instance.OnUpInputReceived += InputManager_Event_OnUpInputReceived;
         Input_Manager.instance.OnRightInputReceived += InputManager_Event_OnRightInputReceived;
@@ -167,9 +176,9 @@ public class Board_Manager : MonoBehaviour
                     {
                         board_Values[x, i - 1] += board_Values[x, i - 1];
                         blocks[x, i - 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, i - 1]);
-                        
+
                         Increase_Score(board_Values[x, i - 1]);
-                        
+
                         board_Values[x, i] = 0;
                         blocks[x, i].GetComponent<Block_Manager>().Set_Block_Value(0);
                     }
@@ -215,9 +224,9 @@ public class Board_Manager : MonoBehaviour
                     {
                         board_Values[x, i - 1] += board_Values[x, i - 1];
                         blocks[x, i - 1].GetComponent<Block_Manager>().Set_Block_Value(board_Values[x, i - 1]);
-                        
+
                         Increase_Score(board_Values[x, i - 1]);
-                        
+
                         board_Values[x, i] = 0;
                         blocks[x, i].GetComponent<Block_Manager>().Set_Block_Value(0);
                     }
@@ -260,9 +269,9 @@ public class Board_Manager : MonoBehaviour
                     {
                         board_Values[i - 1, y] += board_Values[i - 1, y];
                         blocks[i - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[i - 1, y]);
-                       
+
                         Increase_Score(board_Values[x, i - 1]);
-                        
+
                         board_Values[i, y] = 0;
                         blocks[i, y].GetComponent<Block_Manager>().Set_Block_Value(0);
                     }
@@ -307,9 +316,9 @@ public class Board_Manager : MonoBehaviour
                     {
                         board_Values[i - 1, y] += board_Values[i - 1, y];
                         blocks[i - 1, y].GetComponent<Block_Manager>().Set_Block_Value(board_Values[i - 1, y]);
-                        
+
                         Increase_Score(board_Values[x, i - 1]);
-                        
+
                         board_Values[i, y] = 0;
                         blocks[i, y].GetComponent<Block_Manager>().Set_Block_Value(0);
                     }
@@ -361,9 +370,9 @@ public class Board_Manager : MonoBehaviour
 
             //Debug.Log("Coordinate : " + coordinate);
             //Debug.Log("x:" + coordinate[0] + ",y:" + coordinate[1]);
-            
+
             int xPos = int.Parse(coordinate[0].ToString()), yPos = int.Parse(coordinate[1].ToString());
-            
+
             //Debug.Log(xPos + "," + yPos);
 
             board_Values[xPos, yPos] = 2;
@@ -373,9 +382,20 @@ public class Board_Manager : MonoBehaviour
 
     private void SaveGame()
     {
-        /*level.score = Level_Manager.instance.GetPlayerScore();
+        level.score = Level_Manager.instance.GetPlayerScore();
+        //Debug.Log("boardWidth : " + boardWidth);
         level.boardWidth = boardWidth;
-        level.board_values = board_Values;
-        level.SaveLevel();*/
+        //Debug.Log("level.boardWidth : " + level.boardWidth);
+        string boardValues_text = "";
+        for (int x = 0; x < boardWidth; x++)
+        {
+            for (int y = 0; y < boardWidth; y++)
+            {
+                boardValues_text += board_Values[x, y].ToString();
+            }
+        }
+
+        level.boardValues_text = boardValues_text;
+        level.SaveLevel();
     }
 }

@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class Input_Manager : MonoBehaviour
 {
+    private enum Direction
+    {
+        Up,
+        Down,
+        Right,
+        Left
+    }
+
     public static Input_Manager instance;
 
     [SerializeField] bool keyboardInputs = true;
@@ -17,6 +25,11 @@ public class Input_Manager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        dragDistance = Screen.height * 5 / 100;
     }
 
     void Update()
@@ -35,9 +48,59 @@ public class Input_Manager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.S)) Trigger_Event_DownInputReceived();
     }
 
+    private Vector3 firstTouchPosition;
+    private Vector3 lastTouchPosition;
+    private float dragDistance;
+
     private void Listen_TouchInputs()
     {
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                firstTouchPosition = touch.position;
+                lastTouchPosition = touch.position;
+            }
+            else if (touch.phase == TouchPhase.Moved)
+            {
+                lastTouchPosition = touch.position;
+            }
+            else if (touch.phase == TouchPhase.Ended)
+            {
+                lastTouchPosition = touch.position;
 
+                if (Mathf.Abs(lastTouchPosition.x - firstTouchPosition.x) > dragDistance || Mathf.Abs(lastTouchPosition.y - firstTouchPosition.y) > dragDistance)
+                {
+                    if (Mathf.Abs(lastTouchPosition.x - firstTouchPosition.x) > Mathf.Abs(lastTouchPosition.y - firstTouchPosition.y))
+                    {   
+                        if ((lastTouchPosition.x > firstTouchPosition.x))
+                        {
+                            Trigger_Event_RightInputReceived();
+                            //Debug.Log("Right Swipe");
+                        }
+                        else
+                        {
+                            Trigger_Event_LeftInputReceived();
+                            //Debug.Log("Left Swipe");
+                        }
+                    }
+                    else
+                    {
+                        if (lastTouchPosition.y > firstTouchPosition.y)
+                        {
+                            Trigger_Event_UpInputReceived();
+                            //Debug.Log("Up Swipe");
+                        }
+                        else
+                        {
+                            Trigger_Event_DownInputReceived();
+                            //Debug.Log("Down Swipe");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void Trigger_Event_UpInputReceived()
