@@ -27,9 +27,24 @@ public class Input_Manager : MonoBehaviour
         instance = this;
     }
 
+    string m_DeviceType;
     private void Start()
     {
         dragDistance = Screen.height * 5 / 100;
+
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            m_DeviceType = "Desktop";
+            keyboardInputs = true;
+            Debug.Log("Device type : " + m_DeviceType);
+        }
+
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            m_DeviceType = "Handheld";
+            keyboardInputs = false;
+            Debug.Log("Device type : " + m_DeviceType);
+        }
     }
 
     void Update()
